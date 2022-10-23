@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32929.385
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpMetaRefresh", "EpMetaRefresh\EpMetaRefresh.csproj", "{D1B99C2F-D11D-4307-A8F2-8378A67AF6D3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D1B99C2F-D11D-4307-A8F2-8378A67AF6D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1B99C2F-D11D-4307-A8F2-8378A67AF6D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1B99C2F-D11D-4307-A8F2-8378A67AF6D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1B99C2F-D11D-4307-A8F2-8378A67AF6D3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AF433D85-40E3-4290-8BD2-560A7D560044}
+	EndGlobalSection
+EndGlobal
