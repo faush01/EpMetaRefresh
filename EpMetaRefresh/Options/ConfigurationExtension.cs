@@ -14,14 +14,22 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see<http://www.gnu.org/licenses/>.
 */
 
-using MediaBrowser.Model.Plugins;
+using MediaBrowser.Common.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace EpMetaRefresh
+namespace EpMetaRefresh.Options
 {
-    public class PluginConfiguration : BasePluginConfiguration
+    public static class ConfigurationExtension
     {
+        public static PluginOptions GetPluginOptions(this IConfigurationManager manager)
+        {
+            return manager.GetConfiguration<PluginOptions>("ep_meta_refresh");
+        }
+        public static void SavePluginOptions(this IConfigurationManager manager, PluginOptions options)
+        {
+            manager.SaveConfiguration("ep_meta_refresh", options);
+        }
     }
 }

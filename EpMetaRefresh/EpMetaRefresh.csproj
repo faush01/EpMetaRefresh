@@ -6,9 +6,13 @@
 </PropertyGroup>
 <ItemGroup>
   <None Remove="Media\logo.png" />
+  <None Remove="Pages\Settings.html" />
+  <None Remove="Pages\Settings.js" />
 </ItemGroup>
 <ItemGroup>
   <EmbeddedResource Include="Media\logo.png" />
+  <EmbeddedResource Include="Pages\Settings.html" />
+  <EmbeddedResource Include="Pages\Settings.js" />
 </ItemGroup>
 <ItemGroup>
   <PackageReference Include="mediabrowser.server.core" Version="4.7.7" />

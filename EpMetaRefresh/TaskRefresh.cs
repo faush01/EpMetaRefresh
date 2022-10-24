@@ -1,4 +1,20 @@
-﻿using MediaBrowser.Controller.Configuration;
+﻿/*
+Copyright(C) 2022
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see<http://www.gnu.org/licenses/>.
+*/
+
+using MediaBrowser.Controller.Configuration;
 using MediaBrowser.Controller;
 using MediaBrowser.Model.Activity;
 using MediaBrowser.Model.IO;
@@ -15,19 +31,21 @@ using MediaBrowser.Model.Services;
 using MediaBrowser.Controller.Entities.TV;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Controller.Plugins;
+using EpMetaRefresh.Options;
 
 namespace EpMetaRefresh
 {
     public class TaskRefresh : IScheduledTask
     {
-        public string Name => "Refresh Recent Episodes";
+        public string Name => "Refresh Recently Aired Episodes";
         public string Key => "EpMetaRefreshTask";
-        public string Description => "Refreshes recently aired episodes with missing or incomplete metadata";
+        public string Description => "Refreshes recently aired episodes with missing or incomplete metadata.";
         public string Category => "Episode Metadata Refresh";
 
         private ILogger _logger;
         private ILibraryManager _libraryManager;
         private IFileSystem _fileSystem;
+        private IServerConfigurationManager _config;
 
         public TaskRefresh(IActivityManager activity, 
             ILogManager logger, 
@@ -39,6 +57,7 @@ namespace EpMetaRefresh
             _logger = logger.GetLogger("EpMetaRefresh - TaskRefresh");
             _libraryManager = libraryManager;
             _fileSystem = fileSystem;
+            _config = config;
         }
 
         public IEnumerable<TaskTriggerInfo> GetDefaultTriggers()
@@ -66,6 +85,11 @@ namespace EpMetaRefresh
         public Task Execute(CancellationToken cancellationToken, IProgress<double> progress)
         {
             _logger.Info("Running Task");
+
+            PluginOptions plugin_options = _config.GetPluginOptions();
+            _logger.Info("Lookback Days : " + plugin_options.LookbackDays);
+            plugin_options.LookbackDays = 100;
+            _config.SavePluginOptions(plugin_options);
 
             InternalItemsQuery query = new InternalItemsQuery();
             query.IsVirtualItem = false;

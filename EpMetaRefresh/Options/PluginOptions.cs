@@ -14,14 +14,14 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see<http://www.gnu.org/licenses/>.
 */
 
-using MediaBrowser.Model.Plugins;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace EpMetaRefresh
+namespace EpMetaRefresh.Options
 {
-    public class PluginConfiguration : BasePluginConfiguration
+    public class PluginOptions
     {
+        public int LookbackDays { get; set; } = 7;
     }
 }

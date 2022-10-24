@@ -1,0 +1,28 @@
+﻿<div data-role="page" class="page type-interior pluginConfigurationPage"
+     data-require="emby-button,emby-select,emby-checkbox,emby-linkbutton,emby-input"
+     data-controller="__plugin/settings.js">
+    <div data-role="content">
+        <div class="content-primary">
+
+            <h3>Settings</h3>
+
+            Lookback Days : <input type="text" id="lookback_days" />
+
+            <br />
+
+            <table style="table-layout: fixed; width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="text-align: left;">Series</th>
+                        <th style="text-align: left;">Season</th>
+                        <th style="text-align: left;">Episode</th>
+                        <th style="text-align: left;">Rating</th>
+                    </tr>
+                </thead>
+                <tbody id="episode_summary">
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
