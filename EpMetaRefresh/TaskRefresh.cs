@@ -32,6 +32,7 @@ using MediaBrowser.Controller.Entities.TV;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Controller.Plugins;
 using EpMetaRefresh.Options;
+using EpMetaRefresh.Lib;
 
 namespace EpMetaRefresh
 {
@@ -39,8 +40,8 @@ namespace EpMetaRefresh
     {
         public string Name => "Refresh Recently Aired Episodes";
         public string Key => "EpMetaRefreshTask";
-        public string Description => "Refreshes recently aired episodes with missing or incomplete metadata.";
-        public string Category => "Episode Metadata Refresh";
+        public string Description => "Refreshes recently aired episodes to fill in missing or incomplete metadata.";
+        public string Category => "Episode Refresh";
 
         private ILogger _logger;
         private ILibraryManager _libraryManager;
@@ -70,74 +71,44 @@ namespace EpMetaRefresh
             return new[] { trigger };
         }
 
-        private string i2s(int? value)
-        {
-            if(value == null)
-            {
-                return "--";
-            }
-            else
-            {
-                return value.Value.ToString("D2");
-            }
-        }
-
         public Task Execute(CancellationToken cancellationToken, IProgress<double> progress)
         {
             _logger.Info("Running Task");
 
             PluginOptions plugin_options = _config.GetPluginOptions();
-            _logger.Info("Lookback Days : " + plugin_options.LookbackDays);
-            plugin_options.LookbackDays = 100;
-            _config.SavePluginOptions(plugin_options);
-
-            InternalItemsQuery query = new InternalItemsQuery();
-            query.IsVirtualItem = false;
-            query.IncludeItemTypes = new string[] { "Episode" };
-
-            BaseItem[] results = _libraryManager.GetItemList(query);
-
-            TimeSpan look_back = TimeSpan.FromDays(8);
-            DateTimeOffset look_back_date = DateTimeOffset.Now.Subtract(look_back);
 
             MetadataRefreshOptions refresh_options = new MetadataRefreshOptions(_fileSystem);
             refresh_options.MetadataRefreshMode = MetadataRefreshMode.FullRefresh;
             refresh_options.ReplaceAllImages = true;
             refresh_options.ReplaceAllMetadata = true;
 
-            int total_episodes = 0;
-            int episodes_updated = 0;
+            List<Episode> episodes_result = new List<Episode>();
+            int total_episodes = QueryHelper.GetEpisodes(_libraryManager, plugin_options, _logger, episodes_result);
+
             int episodes_no_prem = 0;
 
-            foreach (BaseItem item in results)
+            foreach (Episode episode in episodes_result)
             {
-                if (item.GetType() == typeof(Episode))
+                string episodeName = "(" + episode.InternalId + ")";
+                episodeName += "(" + episode.SeriesName + ")";
+                episodeName += "(s" + QueryHelper.i2s(episode.ParentIndexNumber) + "e" + QueryHelper.i2s(episode.IndexNumber) + ")";
+                episodeName += "(" + episode.Name + ")";
+
+                if (episode.PremiereDate != null)
                 {
-                    Episode episode = (Episode)item;
-                    total_episodes++;
-
-                    string episodeName = "(" + episode.InternalId + ")";
-                    episodeName += "(" + episode.SeriesName + ")";
-                    episodeName += "(s" + i2s(episode.ParentIndexNumber) + "e" + i2s(episode.IndexNumber) + ")";
-                    episodeName += "(" + episode.Name + ")";
-
-                    if (episode.PremiereDate == null)
-                    {
-                        episodes_no_prem++;
-                        _logger.Info("No Prem Date : " + episodeName);
-                    }
-                    else if (episode.PremiereDate > look_back_date)
-                    {
-                        episodes_updated++;
-                        episodeName += "(" + episode.PremiereDate.Value.ToString("yyyy-MM-dd HH:mm:ss") + ")";
-                        _logger.Info("Refreshing Metadata : " + episodeName);
-                        episode.RefreshMetadata(refresh_options, cancellationToken);
-                    }
+                    episodeName += "(" + episode.PremiereDate.Value.ToString("yyyy-MM-dd HH:mm:ss") + ")";
                 }
+                else
+                {
+                    episodes_no_prem++;
+                    episodeName += "(No Prem Date)";
+                }
+                _logger.Info("Refreshing Metadata : " + episodeName);
+                episode.RefreshMetadata(refresh_options, cancellationToken);
             }
 
             _logger.Info("total_episodes   : " + total_episodes);
-            _logger.Info("episodes_updated : " + episodes_updated);
+            _logger.Info("episodes_updated : " + episodes_result.Count);
             _logger.Info("episodes_no_prem : " + episodes_no_prem);
 
             return Task.CompletedTask;

@@ -23,5 +23,6 @@ namespace EpMetaRefresh.Options
     public class PluginOptions
     {
         public int LookbackDays { get; set; } = 7;
+        public bool IncludeNoPrem { get; set; } = false;
     }
 }
