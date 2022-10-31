@@ -30,14 +30,28 @@ define([], function () {
 
         var cell_padding = "2px 5px 2px 5px";
 
+        // clean episode table
+        var display_episode_list = view.querySelector("#episode_summary");
+        while (display_episode_list.firstChild) {
+            display_episode_list.removeChild(display_episode_list.firstChild);
+        }
+
+        var tr = null; document.createElement("tr");
+        var td = null;
+
+        tr = document.createElement("tr");
+        td = document.createElement("td");
+        td.colSpan = "8";
+        td.appendChild(document.createTextNode("Loading Data..."));
+        tr.appendChild(td);
+        display_episode_list.appendChild(tr);
+
         var url = "ep_meta_refresh/get_episodes?stamp=" + new Date().getTime();
         url = ApiClient.getUrl(url);
 
         ApiClient.getApiData(url).then(function (episode_data) {
             //console.log("Loaded Chapter Data: " + JSON.stringify(episode_data));
 
-            // clean episode table
-            var display_episode_list = view.querySelector("#episode_summary");
             while (display_episode_list.firstChild) {
                 display_episode_list.removeChild(display_episode_list.firstChild);
             }
@@ -46,8 +60,8 @@ define([], function () {
 
             var row_count = 0;
             for (const episode of episode_items) {
-                var tr = document.createElement("tr");
-                var td = null;
+                tr = document.createElement("tr");
+                td = null;
 
                 td = document.createElement("td");
                 td.style.overflow = "hidden";
